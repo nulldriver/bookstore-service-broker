@@ -26,24 +26,32 @@ import org.springframework.context.annotation.Configuration;
 public class ServiceCatalogConfiguration {
 	@Bean
 	public Catalog catalog() {
-		Plan plan = Plan.builder()
+		Plan standard = Plan.builder()
 				.id("b973fb78-82f3-49ef-9b8b-c1876974a6cd")
 				.name("standard")
 				.description("A simple book store plan")
 				.free(true)
 				.build();
 
+		Plan pro = Plan.builder()
+				.id("2c39bc18-1fae-4a24-a956-99e676e02807")
+				.name("pro")
+				.description("A pro book store plan")
+				.free(true)
+				.build();
+
 		ServiceDefinition serviceDefinition = ServiceDefinition.builder()
 				.id("bdb1be2e-360b-495c-8115-d7697f9c6a9e")
 				.name("bookstore")
-				.description("A simple book store service")
+				.description("A book store service")
 				.bindable(true)
 				.tags("book-store", "books", "sample")
-				.plans(plan)
+				.plans(standard, pro)
 				.metadata("shareable", true)
 				.metadata("displayName", "bookstore")
-				.metadata("longDescription", "A simple book store service")
+				.metadata("longDescription", "A book store service")
 				.metadata("providerDisplayName", "Acme Books")
+				.planUpdateable(true)
 				.build();
 
 		return Catalog.builder()

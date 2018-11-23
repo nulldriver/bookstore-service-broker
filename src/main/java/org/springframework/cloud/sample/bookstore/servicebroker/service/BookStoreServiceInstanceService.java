@@ -27,6 +27,8 @@ import org.springframework.cloud.servicebroker.model.instance.DeleteServiceInsta
 import org.springframework.cloud.servicebroker.model.instance.DeleteServiceInstanceResponse;
 import org.springframework.cloud.servicebroker.model.instance.GetServiceInstanceRequest;
 import org.springframework.cloud.servicebroker.model.instance.GetServiceInstanceResponse;
+import org.springframework.cloud.servicebroker.model.instance.UpdateServiceInstanceRequest;
+import org.springframework.cloud.servicebroker.model.instance.UpdateServiceInstanceResponse;
 import org.springframework.cloud.servicebroker.service.ServiceInstanceService;
 import org.springframework.stereotype.Service;
 
@@ -57,6 +59,11 @@ public class BookStoreServiceInstanceService implements ServiceInstanceService {
 		}
 
 		return responseBuilder.build();
+	}
+
+	@Override
+	public UpdateServiceInstanceResponse updateServiceInstance(UpdateServiceInstanceRequest request) {
+		return UpdateServiceInstanceResponse.builder().build();
 	}
 
 	@Override
