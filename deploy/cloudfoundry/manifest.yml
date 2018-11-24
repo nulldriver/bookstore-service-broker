@@ -1,6 +1,13 @@
 ---
-applications:
-- name: bookstore-service-broker
+defaults: &defaults
   memory: 1G
   path: ../../build/libs/bookstore-service-broker-0.0.1.BUILD-SNAPSHOT.jar
 
+applications:
+- name: bookstore-service-broker
+  <<: *defaults
+
+- name: bookstore-service-broker-async
+  <<: *defaults
+  env:
+    BOOKSTORE_SERVICE_BROKER_ASYNC: true

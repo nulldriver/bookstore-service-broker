@@ -16,6 +16,7 @@
 
 package org.springframework.cloud.sample.bookstore.servicebroker.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.sample.bookstore.servicebroker.model.ServiceInstance;
 import org.springframework.cloud.sample.bookstore.servicebroker.repository.ServiceInstanceRepository;
 import org.springframework.cloud.sample.bookstore.web.service.BookStoreService;
@@ -25,8 +26,11 @@ import org.springframework.cloud.servicebroker.model.instance.CreateServiceInsta
 import org.springframework.cloud.servicebroker.model.instance.CreateServiceInstanceResponse.CreateServiceInstanceResponseBuilder;
 import org.springframework.cloud.servicebroker.model.instance.DeleteServiceInstanceRequest;
 import org.springframework.cloud.servicebroker.model.instance.DeleteServiceInstanceResponse;
+import org.springframework.cloud.servicebroker.model.instance.GetLastServiceOperationRequest;
+import org.springframework.cloud.servicebroker.model.instance.GetLastServiceOperationResponse;
 import org.springframework.cloud.servicebroker.model.instance.GetServiceInstanceRequest;
 import org.springframework.cloud.servicebroker.model.instance.GetServiceInstanceResponse;
+import org.springframework.cloud.servicebroker.model.instance.OperationState;
 import org.springframework.cloud.servicebroker.model.instance.UpdateServiceInstanceRequest;
 import org.springframework.cloud.servicebroker.model.instance.UpdateServiceInstanceResponse;
 import org.springframework.cloud.servicebroker.service.ServiceInstanceService;
@@ -38,6 +42,9 @@ import java.util.Optional;
 public class BookStoreServiceInstanceService implements ServiceInstanceService {
 	private final BookStoreService storeService;
 	private final ServiceInstanceRepository instanceRepository;
+
+	@Value("${BOOKSTORE_SERVICE_BROKER_ASYNC:false}")
+	private boolean async;
 
 	public BookStoreServiceInstanceService(BookStoreService storeService, ServiceInstanceRepository instanceRepository) {
 		this.storeService = storeService;
@@ -58,12 +65,12 @@ public class BookStoreServiceInstanceService implements ServiceInstanceService {
 			saveInstance(request, instanceId);
 		}
 
-		return responseBuilder.build();
+		return responseBuilder.async(async).build();
 	}
 
 	@Override
 	public UpdateServiceInstanceResponse updateServiceInstance(UpdateServiceInstanceRequest request) {
-		return UpdateServiceInstanceResponse.builder().build();
+		return UpdateServiceInstanceResponse.builder().async(async).build();
 	}
 
 	@Override
@@ -91,10 +98,17 @@ public class BookStoreServiceInstanceService implements ServiceInstanceService {
 			storeService.deleteBookStore(instanceId);
 			instanceRepository.deleteById(instanceId);
 
-			return DeleteServiceInstanceResponse.builder().build();
+			return DeleteServiceInstanceResponse.builder().async(async).build();
 		} else {
 			throw new ServiceInstanceDoesNotExistException(instanceId);
 		}
+	}
+
+	@Override
+	public GetLastServiceOperationResponse getLastOperation(GetLastServiceOperationRequest request) {
+		return GetLastServiceOperationResponse.builder()
+				.operationState(OperationState.SUCCEEDED)
+				.build();
 	}
 
 	private void saveInstance(CreateServiceInstanceRequest request, String instanceId) {

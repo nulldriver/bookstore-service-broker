@@ -16,6 +16,7 @@
 
 package org.springframework.cloud.sample.bookstore.servicebroker.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.servicebroker.model.catalog.Catalog;
 import org.springframework.cloud.servicebroker.model.catalog.Plan;
 import org.springframework.cloud.servicebroker.model.catalog.ServiceDefinition;
@@ -24,25 +25,29 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class ServiceCatalogConfiguration {
+
+	@Value("${BOOKSTORE_SERVICE_BROKER_ASYNC:false}")
+	private boolean async;
+
 	@Bean
 	public Catalog catalog() {
 		Plan standard = Plan.builder()
-				.id("b973fb78-82f3-49ef-9b8b-c1876974a6cd")
+				.id(modifyId("b973fb78-82f3-49ef-9b8b-c1876974a6cd"))
 				.name("standard")
 				.description("A simple book store plan")
 				.free(true)
 				.build();
 
 		Plan pro = Plan.builder()
-				.id("2c39bc18-1fae-4a24-a956-99e676e02807")
+				.id(modifyId("2c39bc18-1fae-4a24-a956-99e676e02807"))
 				.name("pro")
 				.description("A pro book store plan")
 				.free(true)
 				.build();
 
 		ServiceDefinition serviceDefinition = ServiceDefinition.builder()
-				.id("bdb1be2e-360b-495c-8115-d7697f9c6a9e")
-				.name("bookstore")
+				.id(modifyId("bdb1be2e-360b-495c-8115-d7697f9c6a9e"))
+				.name(modifyId("bookstore"))
 				.description("A book store service")
 				.bindable(true)
 				.tags("book-store", "books", "sample")
@@ -57,5 +62,13 @@ public class ServiceCatalogConfiguration {
 		return Catalog.builder()
 				.serviceDefinitions(serviceDefinition)
 				.build();
+	}
+
+	public String modifyId(String prefix) {
+		if (async) {
+			return prefix + "-async";
+		} else {
+			return prefix;
+		}
 	}
 }
